@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Shadow Generator</title>
+  </head>
+
+  <body>
+    <div id="app">
+      <header class="header">
+        <h1>Shadow Generator</h1>
+        <p>Create professional composite images with realistic shadows</p>
+      </header>
+
+      <main class="main-content">
+        <section class="input-section">
+          <h2>Input Images</h2>
+          <div class="input-group">
+            <div class="file-input">
+              <label for="fg">Foreground Image</label>
+              <input type="file" id="fg" accept="image/*">
+              <small>Image with transparent background (PNG recommended)</small>
+            </div>
+            <div class="file-input">
+              <label for="bg">Background Image</label>
+              <input type="file" id="bg" accept="image/*">
+              <small>The scene where shadow will be cast</small>
+            </div>
+            <div class="file-input">
+              <label for="depth">Depth Map (Optional)</label>
+              <input type="file" id="depth" accept="image/*">
+              <small>Grayscale image for shadow warping (0=dark/far, 255=light/near)</small>
+            </div>
+          </div>
+        </section>
+
+        <section class="controls-section">
+          <h2>Light Controls</h2>
+          <div class="control-group">
+            <div class="slider-control">
+              <label for="angle">Light Angle: <span id="angleVal">45</span>°</label>
+              <input type="range" id="angle" min="0" max="360" value="45">
+              <div class="slider-labels">
+                <span>0° (Top)</span>
+                <span>180° (Bottom)</span>
+                <span>360°</span>
+              </div>
+            </div>
+            <div class="slider-control">
+              <label for="elevation">Light Elevation: <span id="elevationVal">30</span>°</label>
+              <input type="range" id="elevation" min="0" max="90" value="30">
+              <div class="slider-labels">
+                <span>0° (Horizontal)</span>
+                <span>90° (Overhead)</span>
+              </div>
+            </div>
+          </div>
+          <button id="generate" class="generate-btn">Generate Shadow</button>
+        </section>
+
+        <section class="output-section">
+          <h2>Generated Results</h2>
+          <div class="canvas-grid">
+            <div class="canvas-item">
+              <h3>Final Composite</h3>
+              <canvas id="compositeCanvas"></canvas>
+            </div>
+            <div class="canvas-item">
+              <h3>Shadow Layer</h3>
+              <canvas id="shadowCanvas"></canvas>
+            </div>
+            <div class="canvas-item">
+              <h3>Subject Mask</h3>
+              <canvas id="maskCanvas"></canvas>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer class="footer">
+        <p>Built with TypeScript & HTML5 Canvas</p>
+      </footer>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+
+</html>

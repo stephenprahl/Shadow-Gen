@@ -1,12 +1,3 @@
-# /// script
-# requires-python = ">=3.8"
-# dependencies = [
-#   "opencv-python",
-#   "pillow",
-#   "numpy"
-# ]
-# ///
-
 import cv2
 import numpy as np
 import math

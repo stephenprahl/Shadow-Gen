@@ -1,0 +1,17 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Generate Shadow with Public Images",
+			"type": "shell",
+			"command": "python",
+			"args": [
+				"ts-shadow/public/B_Lamborghini Red.JPG",
+				"ts-shadow/public/B_Child Room.jpeg",
+				"--depth",
+				"ts-shadow/public/25_1107O_11974 PB + 1 - Photo Calendar B_Lamborghini HAS.JPG"
+			],
+			"group": "build"
+		}
+	]
+}

@@ -1,7 +1,11 @@
+from flask import Flask, request, send_file
 import cv2
 import numpy as np
 import math
-import argparse
+import tempfile
+import os
+
+app = Flask(__name__)
 
 def generate_shadow(fg_path, bg_path, light_angle=45.0, light_elevation=30.0, depth_path=None, output_composite='composite.png', output_shadow='shadow_only.png', output_mask='mask_debug.png'):
     # Load images
@@ -77,15 +81,45 @@ def generate_shadow(fg_path, bg_path, light_angle=45.0, light_elevation=30.0, de
     cv2.imwrite(output_composite, bg_rgba)
     print("Shadow generation complete")
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Generate realistic shadow")
-    parser.add_argument("fg", help="Foreground image path")
-    parser.add_argument("bg", help="Background image path")
-    parser.add_argument("--depth", help="Depth map path", default=None)
-    parser.add_argument("--angle", type=float, default=45, help="Light angle 0-360")
-    parser.add_argument("--elevation", type=float, default=30, help="Light elevation 0-90")
-    parser.add_argument("--composite", default="composite.png")
-    parser.add_argument("--shadow", default="shadow_only.png")
-    parser.add_argument("--mask", default="mask_debug.png")
-    args = parser.parse_args()
-    generate_shadow(args.fg, args.bg, args.angle, args.elevation, args.depth, args.composite, args.shadow, args.mask)
+@app.route('/generate', methods=['POST'])
+def generate():
+    # Get uploaded files
+    fg_file = request.files['fg']
+    bg_file = request.files['bg']
+    depth_file = request.files.get('depth')
+    
+    # Save to temp files
+    fg_path = tempfile.mktemp(suffix='.png')
+    bg_path = tempfile.mktemp(suffix='.png')
+    depth_path = None
+    if depth_file:
+        depth_path = tempfile.mktemp(suffix='.png')
+        depth_file.save(depth_path)
+    
+    fg_file.save(fg_path)
+    bg_file.save(bg_path)
+    
+    # Get params
+    angle = float(request.form.get('angle', 45))
+    elevation = float(request.form.get('elevation', 30))
+    
+    # Generate
+    output_composite = tempfile.mktemp(suffix='.png')
+    generate_shadow(fg_path, bg_path, angle, elevation, depth_path, output_composite)
+    
+    # Clean up inputs
+    os.remove(fg_path)
+    os.remove(bg_path)
+    if depth_path:
+        os.remove(depth_path)
+    
+    # Return composite
+    response = send_file(output_composite, mimetype='image/png')
+    # Clean up output after sending
+    @response.call_on_close
+    def cleanup():
+        os.remove(output_composite)
+    return response
+
+if __name__ == '__main__':
+    app.run()
